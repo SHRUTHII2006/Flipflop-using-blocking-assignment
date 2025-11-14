@@ -24,87 +24,203 @@ Blocking assignments execute sequentially in the given order, which makes it eas
 
 ---
 
-## VERILOG CODE
+## VERILOG CODE BLOCKING
 
-### SR Flip-Flop (Blocking)
-
-<img width="1918" height="1078" alt="srff_code" src="https://github.com/user-attachments/assets/71f4dfe2-f88d-456d-ba6d-c72759d2c15e" />
-
+### SR Flip-Flop 
+```verilog
+module sr_ff(s,r,clk,rst,q);
+input s,r,clk,rst;
+output reg q;
+always@(posedge clk)
+begin
+if (rst==1)
+q=1'b0;
+else if (s==0 && r==0)
+q=q;
+else if (s==0 && r==1)
+q=1'b0;
+else if (s==1 && r==0)
+q=1'b1;
+else
+q=1'bx;
+end
+endmodule
+```
 
 ### SR Flip-Flop Test bench 
 
-<img width="1918" height="1078" alt="srff_tb code" src="https://github.com/user-attachments/assets/6abc94e9-5510-45c5-8486-60a0f6496717" />
+```verilog
+module tb_SRFF;
+reg s,r,clk,rst;
+wire q;
+SRFF uut(s,r,clk,rst,q);
+always #5 clk=~clk;
+initial begin
+clk=0;s=0;r=0;rst=1;
+#10 rst=0;
+#10 s=0; r=0;
+#10 s=0; r=1;
+#10 s=1; r=0;
+#10 s=1; r=1;
+#10 s=0; r=0;
+#20 $finish;
+end
+endmodule
 
+```
 
 #### SIMULATION OUTPUT
 
-<img width="1917" height="1078" alt="srff_out" src="https://github.com/user-attachments/assets/2970e56a-2937-452e-a00e-4a7440972638" />
-
-#### Testbench
-
-<img width="1918" height="1078" alt="srff _tb output" src="https://github.com/user-attachments/assets/e10de0d9-b574-4a08-83d1-d77c1b5afbb5" />
+<img width="1918" height="1077" alt="image" src="https://github.com/user-attachments/assets/9095d75a-57bd-4727-af26-2f1e8defb2ac" />
 
 
-### JK Flip-Flop (Blocking)
 
-<img width="1918" height="1078" alt="jkff" src="https://github.com/user-attachments/assets/a8f04be6-acd3-41e9-9227-8f5dc7163e72" />
+### JK Flip-Flop 
+```verilog
 
+module jk_ff(j,k,clk,rst,q);
+input j,k,clk,rst;
+output reg q;
+always@(posedge clk)
+begin
+if (rst==0)
+q=0;
+else if(j==0 && k==0)
+q=q;
+else if(j==0 && k==1)
+q <= 1'b0;
+else if(j==1 && k==0)
+q <= 1'b1;
+else
+q <= ~q;
+end
+endmodule
+```
 
 ### JK Flip-Flop Test bench 
 
-<img width="1918" height="1077" alt="jkff_tb" src="https://github.com/user-attachments/assets/5878b7a1-8f8a-43f0-967d-864f851c42e9" />
-
+```verilog
+module tb_jk_ff;
+  reg j, k, clk, rst;
+  wire q;
+  jk_ff uut (j,k,clk,rst,q);
+  always #5 clk = ~clk;
+  initial begin
+    clk = 0;
+    rst = 1;
+    j = 0;
+    k = 0;
+    #10 rst = 0;
+    #10 j = 0; k = 0;
+    #10 j = 0; k = 1;
+    #10 j = 1; k = 0;
+    #10 j = 1; k = 1;
+    #10 j = 1; k = 1;
+    #10 j = 0; k = 0;
+    #20 $finish;
+  end
+  initial begin
+    $monitor("Time=%0t | clk=%b | rst=%b | j=%b | k=%b | q=%b", $time, clk, rst, j, k, q);
+  end
+endmodule
+```
 
 #### SIMULATION OUTPUT
 
-<img width="1918" height="1078" alt="jkff output" src="https://github.com/user-attachments/assets/c25f897a-9e6f-4825-9dcc-96bff8e76a10" />
+<img width="1918" height="1078" alt="image" src="https://github.com/user-attachments/assets/62c8314e-56f1-48e0-988a-00ce82e48a4e" />
 
 
-#### Testbench
+### D Flip-Flop
 
-<img width="1918" height="1077" alt="jkff_tb output" src="https://github.com/user-attachments/assets/9a13c86d-0427-422a-b438-70bd12a85bf5" />
-
-
-### D Flip-Flop (Blocking)
-
-<img width="1918" height="1077" alt="dff" src="https://github.com/user-attachments/assets/300dc646-3e13-4734-9046-f2d629306c29" />
+```verilog
+module d_ff(clk,rst,D,Q);
+input clk,rst,D;
+output reg Q;
+always @ (posedge clk)
+begin
+  if (rst==1)
+     Q=0;
+  else
+     Q=D;
+end
+endmodule
+```
 
 
 ### D Flip-Flop Test bench 
-
-<img width="1918" height="1076" alt="dff _tb" src="https://github.com/user-attachments/assets/dd59bf7f-7233-4f08-a8c1-4250f6eb693a" />
-
+```verilog
+module tb_d_ff;
+  reg clk,rst,D;
+  wire Q;
+  d_ff uut(clk,rst,D,Q);
+  always #5 clk=~clk;
+  initial
+  begin
+    clk=0;
+    D=0;
+    rst=1;#10;
+    rst=0;
+    D=0; #10;
+    D=1;
+  end
+endmodule
+```
 
 #### SIMULATION OUTPUT
 
-<img width="1918" height="1078" alt="dff output" src="https://github.com/user-attachments/assets/2e8da3ef-c705-42a1-b6ff-c0534448e120" />
+<img width="1917" height="1077" alt="image" src="https://github.com/user-attachments/assets/a48f885c-af45-4ad2-bb0e-eb71bd4dcc59" />
 
 
-#### Testbench
+### T Flip-Flop 
 
-<img width="1918" height="1078" alt="dff_tb output" src="https://github.com/user-attachments/assets/1d960f8b-c131-474b-b607-899d6a1138dd" />
+```verilog
 
-
-### T Flip-Flop (Blocking)
-
-
-<img width="1918" height="1078" alt="tff code" src="https://github.com/user-attachments/assets/2233485f-f96c-4292-997a-dbe0e5fd8ca7" />
+module t_ff(clk,rst,t,q);
+input clk,rst,t;
+output reg q;
+always@(posedge clk)
+begin
+if (rst==1)
+q=0;
+else if(t==0)
+q=q;
+else
+q = ~q;
+end
+endmodule
+```
 
 
 ### T Flip-Flop Test bench 
 
-<img width="1918" height="1078" alt="tff_tb " src="https://github.com/user-attachments/assets/72b4a2a7-af43-4692-b903-1a7f3a09c010" />
+```verilog
+
+module tb_t_ff;
+reg clk,rst,t;
+wire q;
+t_ff uut(clk,rst,t,q);
+always #5 clk = ~clk;
+initial
+begin
+clk = 0;
+rst = 1;
+t = 0;
+#10 rst = 0;
+#10 t = 0;
+#10 t = 1;
+#20 $finish;
+end
+initial
+begin
+$monitor("Time=%0t, clk=%b, rst=%b, t=%b, q=%b", $time, clk, rst, t, q);
+end
+endmodule
+```
 
 
 #### SIMULATION OUTPUT
 
-<img width="1918" height="1078" alt="tff out" src="https://github.com/user-attachments/assets/7e319947-1561-46c4-b485-82114c39c48a" />
-
-
-#### Testbench
-
-<img width="1918" height="1078" alt="tff_tb output" src="https://github.com/user-attachments/assets/acd23263-64b2-4a21-b907-b062e08538de" />
-
+<img width="1918" height="1077" alt="image" src="https://github.com/user-attachments/assets/3798624b-623e-4c0b-b17c-e398abef75ac" />
 
 
 ### RESULT
